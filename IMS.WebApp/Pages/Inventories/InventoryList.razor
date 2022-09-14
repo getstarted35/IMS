@@ -1,0 +1,58 @@
+﻿@page "/inventories"
+
+@inject NavigationManager NavigationManager
+@inject IViewInventoriesByNameUseCase ViewInventoriesByNameUseCase
+
+<h3>Envanter Listesi</h3>
+<br />
+<ViewInventoriesComponent 
+     OnSearchInventories="OnSearchInventories"></ViewInventoriesComponent>
+<br />
+@if (ListInventories != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>İsim</th>
+                <th>Adet</th>
+                <th>Fiyat</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var inv in this.ListInventories)
+            {
+                <InventoryItemComponent Inventory="inv"></InventoryItemComponent>
+            }
+        </tbody>
+    </table>
+}
+<br />
+<button type="button" class="btn btn-primary" @onclick="AddInventory">Envanter Ekle</button>
+
+
+
+
+@code {
+    private List<Inventory>? ListInventories;
+
+   
+
+    protected override async Task OnInitializedAsync()
+    {
+        var invs = await ViewInventoriesByNameUseCase.ExecuteAsync();
+        this.ListInventories = invs.ToList();
+
+    }
+
+    private void OnSearchInventories(List<Inventory> inventories)
+    {
+
+        ListInventories = inventories;
+    }
+    private void AddInventory()
+    {
+        NavigationManager.NavigateTo("/addinventory");
+    }
+
+}

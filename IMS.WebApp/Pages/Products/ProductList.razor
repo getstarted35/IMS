@@ -1,0 +1,67 @@
+﻿@page "/products"
+@inject NavigationManager NavigationManager
+@inject IViewProductsByNameUseCase ViewProductsByNameUseCase
+
+<h3>Ürün Listesi</h3>
+<br />
+
+<ViewProductsComponent OnSearchProducts="OnSearchProducts"></ViewProductsComponent>
+
+@if (ListProducts != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>İsim</th>
+                <th>Adet</th>
+                <th>Fiyat</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in this.ListProducts)
+            {
+                <ProductItemComponent 
+                    Product="product"
+                              OnProductDeleted="OnProductDeleted"></ProductItemComponent>
+            }
+        </tbody>
+    </table>
+}
+<br />
+<button type="button" class="btn btn-primary" @onclick="AddProduct">Ürün Ekle</button> 
+
+@code {
+    private List<Product>? ListProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+    }
+
+    private void OnSearchProducts(List<Product> products)
+    {
+        this.ListProducts = products;
+    }
+
+    private void AddProduct()
+    {
+        NavigationManager.NavigateTo("/addproduct");
+    }
+
+    private async Task OnProductDeleted()
+    {
+        await LoadProducts();
+    }
+   private async Task LoadProducts()
+   {
+        var prods = await ViewProductsByNameUseCase.ExecuteAsync();
+        this.ListProducts = prods.ToList(); 
+   }
+  
+}
+ 
+
+
+
+
